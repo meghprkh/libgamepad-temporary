@@ -4,12 +4,12 @@ int main () {
 	Mappings.add_from_file("./gamecontrollerdb.txt");
 	var gm = new GamepadMonitor();
 	var g = new Gamepad();
-	gm.on_plugin.connect((guid) => {
-		print(@"GM Plugged in $(guid.to_string())\n");
+	gm.on_plugin.connect((guid, name) => {
+		print(@"GM Plugged in $(guid.to_string()) - $name\n");
 		g.open(guid);
 	});
 
-	gm.on_unplug.connect((guid) => print (@"GM Unplugged $(guid.to_string())\n"));
+	gm.on_unplug.connect((guid, name) => print (@"GM Unplugged $(guid.to_string()) - $name\n"));
 
 	List<Guid> gp_list = gm.get_gamepads ();
 	Guid gp_guid = gp_list.nth_data(0);

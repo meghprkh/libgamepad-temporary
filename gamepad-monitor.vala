@@ -11,13 +11,15 @@ public class LibGamepad.GamepadMonitor : Object {
 	/**
 	 * Emitted when a gamepad is plugged in
 	 * @param  guid   The guid of the plugged in gamepad
+	 * @param  name   The name of the plugged in gamepad
 	 */
-	public signal void on_plugin (Guid guid);
+	public signal void on_plugin (Guid guid, string? name);
 	/**
 	 * Emitted when a gamepad is unplugged
 	 * @param  guid          The guid of the unplugged gamepad
+	 * @param  name          The name of the unplugged gamepad
 	 */
-	public signal void on_unplug (Guid guid);
+	public signal void on_unplug (Guid guid, string? name);
 
 	public List<Guid> get_gamepads () {
 		return identifier_to_guid.get_values ();
@@ -73,7 +75,7 @@ public class LibGamepad.GamepadMonitor : Object {
 
 	private void on_raw_plugin (string identifier, Guid guid) {
 		add_gamepad (identifier, guid);
-		on_plugin (guid);
+		on_plugin (guid, Mappings.get_name (guid));
 	}
 
 	private void on_raw_unplug (string identifier) {
@@ -82,6 +84,6 @@ public class LibGamepad.GamepadMonitor : Object {
 		ngamepads--;
 		identifier_to_guid.remove (identifier);
 		guid_to_identifier.remove (guid.to_string ());
-		on_unplug (guid);
+		on_unplug (guid, Mappings.get_name (guid));
 	}
 }
