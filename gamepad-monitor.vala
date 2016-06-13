@@ -29,7 +29,9 @@ public class LibGamepad.GamepadMonitor : Object {
 	 */
 	public void foreach_gamepad (ForeachGamepadCallback cb) {
 		identifier_to_guid.foreach ((identifier, guid) => {
-			cb(guid, Mappings.get_name (guid));
+			var name = Mappings.get_name (guid);
+			if (name == null) name = guid_to_raw_name.get (guid.to_string ());
+			cb(guid, name);
 		});
 	}
 
@@ -42,8 +44,8 @@ public class LibGamepad.GamepadMonitor : Object {
 
 		Guid guid;
 		string identifier;
-		gm.foreach_gamepad((identifier, guid) => {
-			add_gamepad (identifier, guid);
+		gm.foreach_gamepad((identifier, guid, raw_name) => {
+			add_gamepad (identifier, guid, raw_name);
 		});
 	}
 
@@ -65,6 +67,7 @@ public class LibGamepad.GamepadMonitor : Object {
 
 	private static HashTable<string, Guid> identifier_to_guid;
 	private static HashTable<string, string> guid_to_identifier;
+	private static HashTable<string, string> guid_to_raw_name;
 	private RawGamepadMonitor gm;
 
 	private static void init_static_if_not () {
@@ -73,17 +76,22 @@ public class LibGamepad.GamepadMonitor : Object {
 			identifier_to_guid = new HashTable<string, Guid> (str_hash, str_equal);
 		if (guid_to_identifier == null)
 			guid_to_identifier = new HashTable<string, string> (str_hash, str_equal);
+		if (guid_to_raw_name == null)
+			guid_to_raw_name = new HashTable<string, string> (str_hash, str_equal);
 	}
 
-	private void add_gamepad (string identifier, Guid guid) {
+	private void add_gamepad (string identifier, Guid guid, string? raw_name) {
 		ngamepads++;
 		identifier_to_guid.replace (identifier, guid);
 		guid_to_identifier.replace (guid.to_string (), identifier);
+		guid_to_raw_name.replace (guid.to_string (), raw_name);
 	}
 
-	private void on_raw_plugin (string identifier, Guid guid) {
-		add_gamepad (identifier, guid);
-		on_plugin (guid, Mappings.get_name (guid));
+	private void on_raw_plugin (string identifier, Guid guid, string? raw_name = null) {
+		add_gamepad (identifier, guid, raw_name);
+		var name = Mappings.get_name (guid);
+		if (name == null) name = guid_to_raw_name.get (guid.to_string ());
+		on_plugin (guid, name);
 	}
 
 	private void on_raw_unplug (string identifier) {

@@ -9,7 +9,7 @@ public class LibGamepad.LinuxRawGamepadMonitor : Object, RawGamepadMonitor {
 		client.uevent.connect(udev_client_callback);
 	}
 
-	public delegate void ForeachGamepadCallback(string identifier, Guid guid);
+	public delegate void ForeachGamepadCallback(string identifier, Guid guid, string? raw_name = null);
 	public void foreach_gamepad (ForeachGamepadCallback cb) {
 		client.query_by_subsystem("input").foreach((dev) => {
 			if (dev.get_device_file() == null) return;
@@ -20,7 +20,7 @@ public class LibGamepad.LinuxRawGamepadMonitor : Object, RawGamepadMonitor {
 				if (fd < 0) return;
 				var evdev = new Evdev();
 				if (evdev.set_fd(fd) < 0) return;
-				cb (identifier, LibGamepad.LinuxGuidHelpers.from_dev(evdev));
+				cb (identifier, LibGamepad.LinuxGuidHelpers.from_dev(evdev), evdev.name);
 			}
 		});
 	}
@@ -35,7 +35,7 @@ public class LibGamepad.LinuxRawGamepadMonitor : Object, RawGamepadMonitor {
 				if (fd < 0) return;
 				var evdev = new Evdev();
 				if (evdev.set_fd(fd) < 0) return;
-				on_plugin (identifier, LibGamepad.LinuxGuidHelpers.from_dev(evdev));
+				on_plugin (identifier, LibGamepad.LinuxGuidHelpers.from_dev(evdev), evdev.name);
 			} else if (action == "remove") {
 				on_unplug (identifier);
 			}
