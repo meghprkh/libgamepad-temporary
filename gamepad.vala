@@ -40,6 +40,7 @@ public class LibGamepad.Gamepad : Object {
 	 */
 	public string? name { get; private set; }
 
+	private bool mapped;
 	private RawGamepad rg;
 	private InputType[] buttons;
 	private int[] buttons_value;
@@ -60,6 +61,7 @@ public class LibGamepad.Gamepad : Object {
 		rg = GamepadMonitor.get_raw_gamepad (guid);
 		if (rg == null) return;
 
+		mapped = false;
 		raw_name = rg.name;
 		this.guid = rg.guid;
 		buttons.resize (rg.nbuttons);
@@ -79,6 +81,7 @@ public class LibGamepad.Gamepad : Object {
 	}
 
 	private void on_raw_button_event (int button, bool value) {
+		if (!mapped) return;
 		switch(buttons[button]) {
 			case InputType.AXIS:
 				axis_event((StandardGamepadAxis) buttons_value[button], (double) value);
@@ -90,6 +93,7 @@ public class LibGamepad.Gamepad : Object {
 	}
 
 	private void on_raw_axis_event (int axis, double value) {
+		if (!mapped) return;
 		switch(axes[axis]) {
 			case InputType.AXIS:
 				axis_event((StandardGamepadAxis) axes_value[axis], value);
@@ -101,6 +105,7 @@ public class LibGamepad.Gamepad : Object {
 	}
 
 	private void on_raw_hat_event (int hati, int axis, int value) {
+		if (!mapped) return;
 		int hatp;
 		var hat = hats[hati];
 		if (value == 0) hatp = (hat.axisval[axis] + axis + 4) % 4;
@@ -117,7 +122,9 @@ public class LibGamepad.Gamepad : Object {
 		}
 	}
 
-	private void add_mapping (string mappingstring) {
+	private void add_mapping (string? mappingstring) {
+		if (mappingstring == null || mappingstring == "") return;
+		mapped = true;
 		var mappings = mappingstring.split(",");
 		foreach (var mapping in mappings) {
 			if (mapping.split(":").length == 2) {
