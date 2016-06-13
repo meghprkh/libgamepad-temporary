@@ -7,7 +7,7 @@ private class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
 	public uint8 nhats { get; protected set; default = 0; }
 
 	private int fd;
-	private FileMonitor monitor;
+	private GUdev.Client gudev_client;
 	private uint? event_source_id;
 	private Libevdev.Evdev dev;
 
@@ -26,11 +26,11 @@ private class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
 			throw new FileError.FAILED ("Locha ho gaya o bhaiya locha ho gaya");
 
 		// Monitor the file for deletion
-		monitor = File.new_for_path (file_name).monitor_file (FileMonitorFlags.NONE);
-		monitor.changed.connect ((f1, f2, e) => {
-			if (e == FileMonitorEvent.DELETED) {
-				remove_event_source ();
-				unplug ();
+		gudev_client = new GUdev.Client({"input"});
+		gudev_client.uevent.connect((action, gudev_dev) => {
+			if (action == "remove" && gudev_dev.get_device_file () == file_name) {
+				remove_event_source();
+				unplug();
 			}
 		});
 
