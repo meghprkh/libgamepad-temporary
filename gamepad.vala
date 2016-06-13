@@ -39,9 +39,12 @@ public class LibGamepad.Gamepad : Object {
 	 * The name present in our database
 	 */
 	public string? name { get; private set; }
+	/**
+	 * The raw gamepad behind this gamepad
+	 */
+	public RawGamepad raw_gamepad { get; private set; }
 
 	private bool mapped;
-	private RawGamepad rg;
 	private InputType[] buttons;
 	private int[] buttons_value;
 	private InputType[] axes;
@@ -58,26 +61,26 @@ public class LibGamepad.Gamepad : Object {
 	 */
 	public void open (Guid? guid = null) throws FileError {
 		if (guid == null) return;
-		rg = GamepadMonitor.get_raw_gamepad (guid);
-		if (rg == null) return;
+		raw_gamepad = GamepadMonitor.get_raw_gamepad (guid);
+		if (raw_gamepad == null) return;
 
 		mapped = false;
-		raw_name = rg.name;
-		this.guid = rg.guid;
-		buttons.resize (rg.nbuttons);
-		buttons_value.resize (rg.nbuttons);
-		axes.resize (rg.naxes);
-		axes_value.resize (rg.naxes);
-		hats.resize (rg.nhats);
-		for (var i = 0; i < rg.nhats; i++) {
+		raw_name = raw_gamepad.name;
+		this.guid = raw_gamepad.guid;
+		buttons.resize (raw_gamepad.nbuttons);
+		buttons_value.resize (raw_gamepad.nbuttons);
+		axes.resize (raw_gamepad.naxes);
+		axes_value.resize (raw_gamepad.naxes);
+		hats.resize (raw_gamepad.nhats);
+		for (var i = 0; i < raw_gamepad.nhats; i++) {
 			hats[i] = new Hat();
 			hats[i].axisval[0] = hats[i].axisval[1] = 0;
 		}
 		add_mapping (Mappings.get_mapping(guid));
-		rg.button_event.connect (on_raw_button_event);
-		rg.axis_event.connect (on_raw_axis_event);
-		rg.hat_event.connect (on_raw_hat_event);
-		rg.unplug.connect (() => unplug ());
+		raw_gamepad.button_event.connect (on_raw_button_event);
+		raw_gamepad.axis_event.connect (on_raw_axis_event);
+		raw_gamepad.hat_event.connect (on_raw_hat_event);
+		raw_gamepad.unplug.connect (() => unplug ());
 	}
 
 	private void on_raw_button_event (int button, bool value) {
