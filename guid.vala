@@ -21,7 +21,18 @@ public class LibGamepad.Guid : Object {
 			guid[i] = raw_guid[i];
 	}
 
-	/*public Guid.parse (string )*/
+	/**
+	 * Creates GUID from the string representation of the guid
+	 * @param  guidstr   The string from which the GUID has to be generated
+	 */
+	public Guid.parse (string guidstr) {
+		for (var i = 0; i < 8; i++) {
+			guid[i] = (asciitohex(guidstr[4*i + 2]) << 12) +
+					  (asciitohex(guidstr[4*i + 3]) << 8) +
+					  (asciitohex(guidstr[4*i + 0]) << 4) +
+					  (asciitohex(guidstr[4*i + 1]) << 0) ;
+		}
+	}
 
 	/**
 	 * Serializes the GUID to a string
@@ -40,5 +51,10 @@ public class LibGamepad.Guid : Object {
 	        builder.append_unichar(k_rgchHexToASCII[c & 0x0F]);
 	    }
 		return builder.str;
+	}
+
+	private uint16 asciitohex (char ch) {
+		if (ch >= '0' && ch <= '9') return ch - '0';
+		else return ch - 'a' + 10;
 	}
 }
