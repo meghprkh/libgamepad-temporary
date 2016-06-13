@@ -1,5 +1,3 @@
-using LibGamepad;
-
 private class LibGamepad.Hat : Object {
 	public InputType types[4];
 	public int values[4];

@@ -1,5 +1,3 @@
-using LibGamepad;
-
 private class LibGamepad.MappingHelpers {
 	public static InputType map_type (string str) {
 		switch (str) {

@@ -1,7 +1,3 @@
-using Libevdev;
-using Linux.Input;
-using LibGamepad;
-
 public class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
 	public string name { get; protected set; }
 	public Guid guid { get; protected set; }
@@ -13,11 +9,11 @@ public class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
 	private int fd;
 	private FileMonitor monitor;
 	private uint? event_source_id;
-	private Evdev dev;
+	private Libevdev.Evdev dev;
 
-	private uint8 key_map[KEY_MAX];
-	private uint8 abs_map[ABS_MAX];
-	private AbsInfo abs_info[ABS_MAX];
+	private uint8 key_map[Linux.Input.KEY_MAX];
+	private uint8 abs_map[Linux.Input.ABS_MAX];
+	private Linux.Input.AbsInfo abs_info[Linux.Input.ABS_MAX];
 
 	public LinuxRawGamepad (string file_name) throws FileError {
 		fd = Posix.open (file_name, Posix.O_RDONLY | Posix.O_NONBLOCK);
@@ -25,7 +21,7 @@ public class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
 		if (fd < 0)
 			throw new FileError.FAILED (@"Unable to open file $file_name: $(Posix.strerror(Posix.errno))");
 
-		dev = new Evdev();
+		dev = new Libevdev.Evdev();
 		if (dev.set_fd(fd) < 0)
 			throw new FileError.FAILED ("Locha ho gaya o bhaiya locha ho gaya");
 
@@ -47,29 +43,29 @@ public class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
 
 		// Initialize hats, buttons and axes
 		uint i;
-		for (i = BTN_JOYSTICK; i < KEY_MAX; ++i) {
-			if (dev.has_event_code(EV_KEY, i)) {
-				key_map[i - BTN_MISC] = nbuttons;
+		for (i = Linux.Input.BTN_JOYSTICK; i < Linux.Input.KEY_MAX; ++i) {
+			if (dev.has_event_code(Linux.Input.EV_KEY, i)) {
+				key_map[i - Linux.Input.BTN_MISC] = nbuttons;
 				++nbuttons;
 			}
 		}
-		for (i = BTN_MISC; i < BTN_JOYSTICK; ++i) {
-			if (dev.has_event_code(EV_KEY, i)) {
-				key_map[i - BTN_MISC] = nbuttons;
+		for (i = Linux.Input.BTN_MISC; i < Linux.Input.BTN_JOYSTICK; ++i) {
+			if (dev.has_event_code(Linux.Input.EV_KEY, i)) {
+				key_map[i - Linux.Input.BTN_MISC] = nbuttons;
 				++nbuttons;
 			}
 		}
 
 
 		// Get info about axes
-	    for (i = 0; i < ABS_MAX; ++i) {
+	    for (i = 0; i < Linux.Input.ABS_MAX; ++i) {
 	        /* Skip hats */
-	        if (i == ABS_HAT0X) {
-	            i = ABS_HAT3Y;
+	        if (i == Linux.Input.ABS_HAT0X) {
+	            i = Linux.Input.ABS_HAT3Y;
 	            continue;
 	        }
-	        if (dev.has_event_code(EV_ABS, i)) {
-				AbsInfo? absinfo = dev.get_abs_info(i);
+	        if (dev.has_event_code(Linux.Input.EV_ABS, i)) {
+				Linux.Input.AbsInfo? absinfo = dev.get_abs_info(i);
 	            abs_map[i] = naxes;
 				abs_info[naxes] = absinfo;
 	            ++naxes;
@@ -77,9 +73,9 @@ public class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
 	    }
 
 		// Get info about hats
-		for (i = ABS_HAT0X; i <= ABS_HAT3Y; i += 2) {
-			if (dev.has_event_code(EV_ABS, i) || dev.has_event_code(EV_ABS, i+1)) {
-				AbsInfo? absinfo = dev.get_abs_info(i);
+		for (i = Linux.Input.ABS_HAT0X; i <= Linux.Input.ABS_HAT3Y; i += 2) {
+			if (dev.has_event_code(Linux.Input.EV_ABS, i) || dev.has_event_code(Linux.Input.EV_ABS, i+1)) {
+				Linux.Input.AbsInfo? absinfo = dev.get_abs_info(i);
 				if (absinfo == null) continue;
 
 				++nhats;
@@ -96,26 +92,26 @@ public class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
 	private void on_event () {
 		int rc;
 		Linux.Input.Event ev;
-		rc = dev.next_event(ReadFlag.NORMAL, out ev);
+		rc = dev.next_event(Libevdev.ReadFlag.NORMAL, out ev);
 		if (rc == 0) {
 			int code = ev.code;
             switch (ev.type) {
-            case EV_KEY:
-                if (code >= BTN_MISC) {
-					button_event (key_map[code - BTN_MISC], (bool) ev.value);
+            case Linux.Input.EV_KEY:
+                if (code >= Linux.Input.BTN_MISC) {
+					button_event (key_map[code - Linux.Input.BTN_MISC], (bool) ev.value);
                 }
                 break;
-            case EV_ABS:
+            case Linux.Input.EV_ABS:
                 switch (code) {
-                case ABS_HAT0X:
-                case ABS_HAT0Y:
-                case ABS_HAT1X:
-                case ABS_HAT1Y:
-                case ABS_HAT2X:
-                case ABS_HAT2Y:
-                case ABS_HAT3X:
-                case ABS_HAT3Y:
-                    code -= ABS_HAT0X;
+                case Linux.Input.ABS_HAT0X:
+                case Linux.Input.ABS_HAT0Y:
+                case Linux.Input.ABS_HAT1X:
+                case Linux.Input.ABS_HAT1Y:
+                case Linux.Input.ABS_HAT2X:
+                case Linux.Input.ABS_HAT2Y:
+                case Linux.Input.ABS_HAT3X:
+                case Linux.Input.ABS_HAT3Y:
+                    code -= Linux.Input.ABS_HAT0X;
 					hat_event (code / 2, code % 2, ev.value);
                     break;
                 default:
@@ -124,11 +120,11 @@ public class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
                     break;
                 }
                 break;
-            case EV_REL:
+            case Linux.Input.EV_REL:
                 switch (code) {
-                case REL_X:
-                case REL_Y:
-                    code -= REL_X;
+                case Linux.Input.REL_X:
+                case Linux.Input.REL_Y:
+                    code -= Linux.Input.REL_X;
 					// TODO : ball events
                     print("Ball %d Axis %d Value %d\n", code / 2, code % 2, ev.value);
                     break;

@@ -1,8 +1,5 @@
-using Libevdev;
-using LibGamepad;
-
 public class LibGamepad.LinuxGuidHelpers : Object {
-	public static Guid from_dev (Evdev dev) {
+	public static Guid from_dev (Libevdev.Evdev dev) {
 		uint16[] guid = new uint16[8];
 		guid[0] = dev.id_bustype.to_little_endian ();
 	    guid[1] = 0;
@@ -21,7 +18,7 @@ public class LibGamepad.LinuxGuidHelpers : Object {
 	   	if (fd < 0)
 	   		throw new FileError.FAILED (@"Unable to open file $file_name: $(Posix.strerror(Posix.errno))");
 
-	   	var dev = new Evdev();
+	   	var dev = new Libevdev.Evdev();
 	   	if (dev.set_fd(fd) < 0)
 	   		throw new FileError.FAILED (@"Evdev error on opening file $file_name: $(Posix.strerror(Posix.errno))");
 

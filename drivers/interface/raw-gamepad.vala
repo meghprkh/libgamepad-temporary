@@ -1,5 +1,3 @@
-using LibGamepad;
-
 /**
  * This is one of the interfaces that needs to be implemented by the driver.
  *

@@ -1,5 +1,3 @@
-using Libevdev;
-
 /**
  * A class to store the GUID of the gamepad.
  *

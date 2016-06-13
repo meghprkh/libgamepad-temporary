@@ -1,9 +1,7 @@
-using LibGamepad;
-
 int main () {
-	Mappings.add_from_file("./gamecontrollerdb.txt");
-	var gm = new GamepadMonitor();
-	var g = new Gamepad();
+	LibGamepad.Mappings.add_from_file("./gamecontrollerdb.txt");
+	var gm = new LibGamepad.GamepadMonitor();
+	var g = new LibGamepad.Gamepad();
 	gm.on_plugin.connect((guid, name) => {
 		print(@"GM Plugged in $(guid.to_string()) - $name\n");
 		g.open(guid);
