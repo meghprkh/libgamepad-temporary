@@ -24,8 +24,7 @@ public class LibGamepad.GamepadMonitor : Object {
 	public delegate void ForeachGamepadCallback(Guid guid, string? name);
 	/**
 	 * This function allows to iterate over all gamepads
-	 * @param  {ForeachGamepadCallback}   cb
-	 * @return {void}
+	 * @param    cb
 	 */
 	public void foreach_gamepad (ForeachGamepadCallback cb) {
 		identifier_to_guid.foreach ((identifier, guid) => {
