@@ -21,8 +21,16 @@ public class LibGamepad.GamepadMonitor : Object {
 	 */
 	public signal void on_unplug (Guid guid, string? name);
 
-	public List<Guid> get_gamepads () {
-		return identifier_to_guid.get_values ();
+	public delegate void ForeachGamepadCallback(Guid guid, string? name);
+	/**
+	 * This function allows to iterate over all gamepads
+	 * @param  {ForeachGamepadCallback}   cb
+	 * @return {void}
+	 */
+	public void foreach_gamepad (ForeachGamepadCallback cb) {
+		identifier_to_guid.foreach ((identifier, guid) => {
+			cb(guid, Mappings.get_name (guid));
+		});
 	}
 
 	public GamepadMonitor() {
