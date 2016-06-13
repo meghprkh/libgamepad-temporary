@@ -73,7 +73,7 @@ public class LibGamepad.Gamepad : Object {
 			hats[i] = new Hat();
 			hats[i].axisval[0] = hats[i].axisval[1] = 0;
 		}
-		add_mapping (Mappings.get_mapping(guid.to_string ()));
+		add_mapping (Mappings.get_mapping(guid));
 		rg.button_event.connect (on_raw_button_event);
 		rg.axis_event.connect (on_raw_axis_event);
 		rg.hat_event.connect (on_raw_hat_event);
