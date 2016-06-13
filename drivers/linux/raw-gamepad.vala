@@ -1,4 +1,4 @@
-public class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
+private class LibGamepad.LinuxRawGamepad : Object, RawGamepad {
 	public string name { get; protected set; }
 	public Guid guid { get; protected set; }
 

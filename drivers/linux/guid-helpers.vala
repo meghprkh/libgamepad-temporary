@@ -1,4 +1,4 @@
-public class LibGamepad.LinuxGuidHelpers : Object {
+private class LibGamepad.LinuxGuidHelpers : Object {
 	public static Guid from_dev (Libevdev.Evdev dev) {
 		uint16[] guid = new uint16[8];
 		guid[0] = dev.id_bustype.to_little_endian ();
