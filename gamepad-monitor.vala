@@ -1,6 +1,22 @@
+/**
+ * This class provides a way to the client to monitor gamepads
+ *
+ * The client interfaces with this class primarily
+ */
 public class LibGamepad.GamepadMonitor : Object {
+	/**
+	 * The number of plugged in gamepads
+	 */
 	public static uint ngamepads { get; private set; default = 0; }
+	/**
+	 * Emitted when a gamepad is plugged in
+	 * @param  guid   The guid of the plugged in gamepad
+	 */
 	public signal void on_plugin (Guid guid);
+	/**
+	 * Emitted when a gamepad is unplugged
+	 * @param  guid          The guid of the unplugged gamepad
+	 */
 	public signal void on_unplug (Guid guid);
 
 	public List<Guid> get_gamepads () {
@@ -21,6 +37,11 @@ public class LibGamepad.GamepadMonitor : Object {
 		});
 	}
 
+	/**
+	 * This static function returns a raw gamepad given a guid. It can be used
+	 * for creating interfaces for remappable-controls.
+	 * @param  guid         The guid of the raw gamepad that you want
+	 */
 	public static RawGamepad? get_raw_gamepad (Guid guid) {
 		init_static_if_not();
 

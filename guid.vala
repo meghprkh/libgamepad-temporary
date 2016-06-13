@@ -1,8 +1,21 @@
 using Libevdev;
 
+/**
+ * A class to store the GUID of the gamepad.
+ *
+ * The GUID is a unique 128-bit identifier issued by the driver which is
+ * dependent on the gamepad only and does not vary with time
+ */
 public class LibGamepad.Guid : Object {
+	/**
+	 * Raw GUID data : 128-bits stored as eight 16-bit unsigned integers
+	 */
 	public uint16[] guid { get; private set; default = new uint16[8]; }
 
+	/**
+	 * Create GUID from raw data
+	 * @param  raw_guid      128-bits stored as eight 16-bit unsigned integers
+	 */
 	public Guid.from_data (uint16[] raw_guid) {
 		for (var i = 0; i < 8; i++)
 			guid[i] = raw_guid[i];
@@ -10,6 +23,9 @@ public class LibGamepad.Guid : Object {
 
 	/*public Guid.parse (string )*/
 
+	/**
+	 * Serializes the GUID to a string
+	 */
 	public string to_string () {
 		const string k_rgchHexToASCII = "0123456789abcdef";
 	    var builder = new StringBuilder ();

@@ -6,13 +6,40 @@ private class LibGamepad.Hat : Object {
 	public int axisval[2];
 }
 
+/**
+ * This class represents a gamepad
+ *
+ * The client interfaces with this class primarily
+ */
 public class LibGamepad.Gamepad : Object {
+	/**
+	 * Emitted when a button is pressed/released
+	 * @param  button        The button pressed
+	 * @param  value         True if pressed, False if released
+	 */
 	public signal void button_event (StandardGamepadButton button, bool value);
+	/**
+	 * Emitted when an axis's value changes
+	 * @param  axis          The axis number from 0 to naxes
+	 * @param  value         The value of the axis ranging from -1 to 1
+	 */
 	public signal void axis_event (StandardGamepadAxis axxis, double value);
+	/**
+	 * Emitted when the gamepad is unplugged
+	 */
 	public signal void unplug ();
 
+	/**
+	 * The raw name reported by the driver
+	 */
 	public string? raw_name { get; private set; }
+	/**
+	 * The guid
+	 */
 	public Guid? guid { get; private set; }
+	/**
+	 * The name present in our database
+	 */
 	public string? name { get; private set; }
 
 	private RawGamepad rg;
@@ -26,6 +53,10 @@ public class LibGamepad.Gamepad : Object {
 		open(guid);
 	}
 
+	/**
+	 * Open another gamepad in the current one's place
+	 * @param  guid          The guid of the gamepad you want to open
+	 */
 	public void open (Guid? guid = null) throws FileError {
 		if (guid == null) return;
 		rg = GamepadMonitor.get_raw_gamepad (guid);
